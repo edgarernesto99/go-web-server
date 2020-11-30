@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar Calificación</title>
+</head>
+<body>
+    <h2>Asignar Calificación</h2>
+    <form action="/set-grade" method="POST">
+        <label for="subject">Materia</label><br>
+        <input type="text" name="subject" id="subject" required><br>
+
+        <label for="student">Estudiante</label><br>
+        <input type="text" name="student" id="student" required><br>
+
+        <label for="grade">Calificación</label><br>
+        <input type="number" name="grade" id="grade" step="any" required min="0" max="100"><br>
+
+        <input type="submit" value="Enviar">
+    </form>
+</body>
+</html>
