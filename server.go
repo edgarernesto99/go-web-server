@@ -160,6 +160,29 @@ func showSubjectAverage(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func showGeneralAverage(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set(
+		"Content-Type",
+		"text/html",
+	)
+	var average float64
+	err := getGeneralAverage(&average)
+	if err != nil {
+		fmt.Fprintf(
+			res,
+			cargarHtml("error.html"),
+			err,
+		)
+	} else {
+		fmt.Fprintf(
+			res,
+			cargarHtml("showAverage.html"),
+			"Promedio general: "+fmt.Sprint(average),
+		)
+	}
+}
+
+
 //Funciones auxiliares
 func saveGrade(args Args) error {
 	_, subjectExists := subjects[args.Subject]
@@ -214,6 +237,28 @@ func getSubjectAverage(subject string, reply *float64) error {
 	}
 	average = average / total
 	*reply = average
+	return nil
+}
+
+func getGeneralAverage(reply *float64) error {
+	var generalAverage float64 = 0
+	var generalTotal float64 = 0
+	for student := range students {
+		var average float64 = 0
+		total := 0
+		generalTotal = generalTotal + 1
+		for _, grade := range students[student] {
+			average = average + grade
+			total = total + 1
+		}
+		average = average / float64(total)
+		generalAverage = generalAverage + average
+	}
+	if generalTotal == 0 {
+		return errors.New("No hay estudiantes")
+	}
+	generalAverage = generalAverage / generalTotal
+	*reply = generalAverage
 	return nil
 }
 
@@ -280,6 +325,7 @@ func main() {
 	http.HandleFunc("/form-subject-average", formGetSubjectAverage) // Formulario obtener prom de materia
 	http.HandleFunc("/student-average", showStudentAverage) //Muestra promedio de estudiante
 	http.HandleFunc("/subject-average", showSubjectAverage) //Mostrar promedio de materia
+	http.HandleFunc("/general-average", showGeneralAverage) //Mostrar promedio general
 	fmt.Println("Corriendo servirdor...")
 	http.ListenAndServe(":9000", nil)
 }
